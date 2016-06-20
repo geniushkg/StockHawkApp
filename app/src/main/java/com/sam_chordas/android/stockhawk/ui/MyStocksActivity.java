@@ -59,7 +59,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mContext = this;
     ConnectivityManager cm =
         (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
     NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
     isConnected = activeNetwork != null &&
         activeNetwork.isConnectedOrConnecting();
@@ -84,12 +83,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                //TODO:
+                //TODO: show graph intent goes here
                 // do something on item click
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
-
 
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.attachToRecyclerView(recyclerView);
@@ -139,8 +137,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       long flex = 10L;
       String periodicTag = "periodic";
 
-      // create a periodic task to pull stocks once every hour after the app has been opened. This
-      // is so Widget data stays up to date.
       PeriodicTask periodicTask = new PeriodicTask.Builder()
           .setService(StockTaskService.class)
           .setPeriod(period)
@@ -149,8 +145,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
           .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
           .setRequiresCharging(false)
           .build();
-      // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
-      // are updated.
       GcmNetworkManager.getInstance(this).schedule(periodicTask);
     }
   }
@@ -163,7 +157,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   }
 
   public void networkToast(){
-    Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+      new MaterialDialog.Builder(mContext).title(R.string.network)
+              .content(R.string.network_error)
+              .show();
   }
 
   public void restoreActionBar() {
@@ -197,7 +193,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       Utils.showPercent = !Utils.showPercent;
       this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
     }
-
     return super.onOptionsItemSelected(item);
   }
 

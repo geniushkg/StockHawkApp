@@ -10,4 +10,10 @@
   <string name="input_hint">FB</string>
   <string name="input_prefill"></string>
   <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+  <string name="btn_content_search">search new stock dialog</string>
+  <string name="stock_sysmbol_string">test_stock_symbol</string>
+  <string name="bid_price_stock">bid price</string>
+  <string name="change_units">change</string>
+  <string name="network">No Network Error</string>
+  <string name="network_error">Due to network unavailiblity list must be empty or out of date</string>
 </resources>
