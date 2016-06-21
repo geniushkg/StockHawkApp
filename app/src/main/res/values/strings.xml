@@ -16,4 +16,5 @@
     <string name="change_units">change</string>
     <string name="network">No Network Error</string>
     <string name="network_error">Due to network unavailiblity list must be empty or out of date</string>
+    <string name="string_symbol">symbol</string>
 </resources>

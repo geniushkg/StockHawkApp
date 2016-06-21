@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.StockApplication;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
@@ -83,8 +84,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                //TODO: show graph intent goes here
-                // do something on item click
+                //TODO: show graph  in  stock detail activity intent goes here
+                  Intent stockDetailHistory = new Intent(mContext,
+                          StockDetailActivity.class);
+                  mCursor.moveToPosition(position);
+                  stockDetailHistory.putExtra("symbol","GOOG");
+                  mContext.startActivity(stockDetailHistory);
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
@@ -154,6 +159,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onResume() {
     super.onResume();
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+
   }
 
   public void networkToast(){
@@ -218,4 +224,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(null);
   }
 
+
 }
+

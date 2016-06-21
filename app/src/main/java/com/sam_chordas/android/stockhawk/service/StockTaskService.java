@@ -1,5 +1,6 @@
 package com.sam_chordas.android.stockhawk.service;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
@@ -7,6 +8,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
@@ -26,8 +29,8 @@ import java.net.URLEncoder;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService{
+  private static final String TAG = StockTaskService.class.getSimpleName();
   private String LOG_TAG = StockTaskService.class.getSimpleName();
-
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
   private StringBuilder mStoredSymbols = new StringBuilder();
@@ -128,9 +131,11 @@ public class StockTaskService extends GcmTaskService{
         }
       } catch (IOException e){
         e.printStackTrace();
+      } catch (Exception genericException){
+        Log.d(TAG, "onRunTask: exception occured :"+genericException.getMessage() +"exception type :  "+genericException.getClass() );
+          Toast.makeText(mContext,"Invalid Symbol , Please Try again with valid symbol",Toast.LENGTH_SHORT).show();
       }
     }
-
     return result;
   }
 
