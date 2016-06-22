@@ -17,6 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.StockApplication;
 import com.sam_chordas.android.stockhawk.entity.Query;
@@ -25,19 +28,10 @@ import com.sam_chordas.android.stockhawk.entity.Result;
 import com.sam_chordas.android.stockhawk.entity.Results;
 import com.sam_chordas.android.stockhawk.entity.Utility;
 import com.sam_chordas.android.stockhawk.rest.QuoteService;
-import com.squareup.okhttp.OkHttpClient;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.GraphicalView;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
+import java.util.List;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -57,6 +51,7 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
     Retrofit retrofit;
     QuoteService QuoteApi;
     RelativeLayout mChartHolder;
+    GraphView graph;
 
 
     @Override
@@ -64,6 +59,7 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         mChartHolder = (RelativeLayout)findViewById(R.id.container_main);
+        graph = (GraphView) findViewById(R.id.graph);
         if(getIntent() != null && getIntent().hasExtra("symbol")){
             symbol = getIntent().getStringExtra("symbol");
         }
@@ -94,40 +90,23 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
                 if(response.isSuccessful()){
-                    mChartHolder.removeAllViews();
 
                     Query mQuery = response.body().getQuery();
                     Results mResult = mQuery.getResults();
                     Quote[] mQuote = mResult.getQuote();
 
-
-                    XYSeries series = new XYSeries("Stock value - Historic Data");
+                    List<DataPoint> dataPoints = new ArrayList<DataPoint>();
                     int hour = 0;
                     for (Quote hf : mQuote) {
-                        series.add(hour++, Double.parseDouble(hf.getHigh()));
+                        dataPoints.add(new DataPoint(hour++,Double.parseDouble(hf.getHigh())));
                         Log.d("value",hf.getHigh());
                     }
-                    XYSeriesRenderer renderer = new XYSeriesRenderer();
-                    renderer.setLineWidth(8);
-                    renderer.setColor(Color.RED);
-                    renderer.setDisplayBoundingPoints(true);
-                    renderer.setPointStyle(PointStyle.CIRCLE);
-                    renderer.setPointStrokeWidth(9);
-                    XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-
-                    XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-                    dataset.addSeries(series);
-
-                    mRenderer.addSeriesRenderer(renderer);
-                   mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
-                    mRenderer.setPanEnabled(false, false);
-                    mRenderer.setYAxisMax(100);
-                    mRenderer.setYAxisMin(0);
-                    mRenderer.setShowGrid(true); // we show the grid
-                    GraphicalView chartView = ChartFactory.getLineChartView(getApplicationContext(), dataset, mRenderer);
-
-                    mChartHolder.addView(chartView);
-               }else {
+                    int sizeOfFetchedData = dataPoints.size();
+                    DataPoint[] dataPointsArray = new DataPoint[sizeOfFetchedData];
+                    LineGraphSeries<DataPoint> fetchedSeries =
+                            new LineGraphSeries<DataPoint>(dataPoints.toArray(new DataPoint[dataPoints.size()]));
+                    graph.addSeries(fetchedSeries);
+                }else {
                     Log.d(TAG, "onResponse: not sucessfull : "+response.message() );
                }
 
