@@ -8,7 +8,7 @@
     <string name="symbol_search">Symbol Search</string>
     <string name="content_test">Search for a Stock Symbol</string>
     <string name="input_hint">FB</string>
-    <string name="input_prefill"></string>
+    <string name="input_prefill">input</string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="btn_content_search">search new stock dialog</string>
     <string name="stock_sysmbol_string">test_stock_symbol</string>
@@ -17,4 +17,19 @@
     <string name="network">No Network Error</string>
     <string name="network_error">Due to network unavailiblity list must be empty or out of date</string>
     <string name="string_symbol">symbol</string>
+    <string name="duration">Duration</string>
+    <string name="google_app_id">AIzaSyD-nsq-6gtKjRwZCYjjVmnDmVMU6UFKq9k</string>
+    <string name="string_tag"  translatable="false">tag</string>
+    <string name="string_add"  translatable="false">add</string>
+    <string name="string_periodic"  translatable="false">periodic</string>
+    <string name="string_init"  translatable="false">init</string>
+    <string name="error_no_symbol"  translatable="false">Error! symbol Not found</string>
+    <string name="string_symbol_found" translatable="false">Success! added new Symbol</string>
+    <string name="string_stock_saved" translatable="false">This stock is already saved!</string>
+    <string name="string_set_background_resource" translatable="false">setBackgroundResource</string>
+    <string name="invalid_symbol">Invalid Quote symbol</string>
+    <string name="stock_exist_text">This stock is already saved!</string>
+    <string name="quote_history_text">Quote history</string>
+    <string name="quote_history_error">No data available.</string>
+    <string name="widget_title" translatable="false">Daily Stock Data</string>
 </resources>
