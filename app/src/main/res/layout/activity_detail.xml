@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/graphloadingIndicatorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        app:indicator="BallClipRotatePulse"
+        app:indicator_color="@color/white" />
     <com.jjoe64.graphview.GraphView
         android:id="@+id/graph"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/graphloadingIndicatorView"/>
 </RelativeLayout>

@@ -28,6 +28,7 @@ import com.sam_chordas.android.stockhawk.entity.Result;
 import com.sam_chordas.android.stockhawk.entity.Results;
 import com.sam_chordas.android.stockhawk.entity.Utility;
 import com.sam_chordas.android.stockhawk.rest.QuoteService;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,33 +42,32 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-
 public class StockDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final String TAG = StockDetailActivity.class.getSimpleName();
     private static final String BASE_URL = "https://query.yahooapis.com/";
-    private String symbol="goog";
+    private String symbol = "goog";
     Retrofit.Builder retroBuilder;
     Retrofit retrofit;
     QuoteService QuoteApi;
     RelativeLayout mChartHolder;
     GraphView graph;
+    AVLoadingIndicatorView graphLoading;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        mChartHolder = (RelativeLayout)findViewById(R.id.container_main);
+        mChartHolder = (RelativeLayout) findViewById(R.id.container_main);
+        graphLoading = (AVLoadingIndicatorView) findViewById(R.id.graphloadingIndicatorView);
         graph = (GraphView) findViewById(R.id.graph);
-        if(getIntent() != null && getIntent().hasExtra("symbol")){
+        if (getIntent() != null && getIntent().hasExtra("symbol")) {
             symbol = getIntent().getStringExtra("symbol");
         }
-
-
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okhttp3.OkHttpClient client =  new okhttp3.OkHttpClient.Builder()
+        okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
         retroBuilder = new Retrofit.Builder()
@@ -77,19 +77,24 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
 
         retrofit = retroBuilder.build();
         QuoteApi = retrofit.create(QuoteService.class);
+        if (graphLoading != null) {
+            graphLoading.setVisibility(View.VISIBLE);
+        }
 
     }
 
-    private void fetchHistoricalData(String symbol,String startDate,String endDate){
-        String q = "select * from yahoo.finance.historicaldata where symbol = \""+symbol+"\" and startDate = \""+endDate+"\" and endDate = \""+startDate+"\"";
+    private void fetchHistoricalData(String symbol, String startDate, String endDate) {
+
+        graphLoading.setVisibility(View.VISIBLE);
+        String q = "select * from yahoo.finance.historicaldata where symbol = \"" + symbol + "\" and startDate = \"" + endDate + "\" and endDate = \"" + startDate + "\"";
         String diagnostics = "true";
         String env = "store://datatables.org/alltableswithkeys";
         String format = "json";
-        Call<Result> resultCall = QuoteApi.getHistoricalData(q,diagnostics,env,format);
+        Call<Result> resultCall = QuoteApi.getHistoricalData(q, diagnostics, env, format);
         resultCall.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
 
                     Query mQuery = response.body().getQuery();
                     Results mResult = mQuery.getResults();
@@ -98,23 +103,26 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
                     List<DataPoint> dataPoints = new ArrayList<DataPoint>();
                     int hour = 0;
                     for (Quote hf : mQuote) {
-                        dataPoints.add(new DataPoint(hour++,Double.parseDouble(hf.getHigh())));
-                        Log.d("value",hf.getHigh());
+                        dataPoints.add(new DataPoint(hour++, Double.parseDouble(hf.getHigh())));
+                        Log.d("value", hf.getHigh());
                     }
                     int sizeOfFetchedData = dataPoints.size();
                     DataPoint[] dataPointsArray = new DataPoint[sizeOfFetchedData];
                     LineGraphSeries<DataPoint> fetchedSeries =
                             new LineGraphSeries<DataPoint>(dataPoints.toArray(new DataPoint[dataPoints.size()]));
                     graph.addSeries(fetchedSeries);
-                }else {
-                    Log.d(TAG, "onResponse: not sucessfull : "+response.message() );
-               }
+                    graphLoading.setVisibility(View.GONE);
+                } else {
+                    Log.d(TAG, "onResponse: not sucessfull : " + response.message());
+                    graphLoading.setVisibility(View.GONE);
+                }
 
             }
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                Log.d(TAG, "onFailure: failed with message : "+t.getMessage());
+                Log.d(TAG, "onFailure: failed with message : " + t.getMessage());
+                graphLoading.setVisibility(View.GONE);
             }
         });
 
@@ -122,7 +130,7 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_detail,menu);
+        getMenuInflater().inflate(R.menu.main_detail, menu);
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -134,33 +142,32 @@ public class StockDetailActivity extends AppCompatActivity implements AdapterVie
     }
 
 
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = parent.getItemAtPosition(position).toString();
         String startDate = Utility.getFormattedDate(System.currentTimeMillis());
         Date date = new Date();
         String[] dates = null;
-        switch (item){
+        switch (item) {
             case "Week":
-                dates = new String[]{startDate,Utility.get1WeekBackDate(date)};
-                Log.d(TAG, "onItemSelected: dates week:"+dates[0]+" and :"+dates[1]);
-                fetchHistoricalData(symbol,startDate,Utility.get1WeekBackDate(date));
+                dates = new String[]{startDate, Utility.get1WeekBackDate(date)};
+                Log.d(TAG, "onItemSelected: dates week:" + dates[0] + " and :" + dates[1]);
+                fetchHistoricalData(symbol, startDate, Utility.get1WeekBackDate(date));
                 break;
             case "Month":
-                dates = new String[]{startDate,Utility.get1MonthBackDate(date)};
-                Log.d(TAG, "onItemSelected: dates Month:"+dates[0]+" and :"+dates[1]);
-                fetchHistoricalData(symbol,startDate,Utility.get1MonthBackDate(date));
+                dates = new String[]{startDate, Utility.get1MonthBackDate(date)};
+                Log.d(TAG, "onItemSelected: dates Month:" + dates[0] + " and :" + dates[1]);
+                fetchHistoricalData(symbol, startDate, Utility.get1MonthBackDate(date));
                 break;
             case "Year":
-                dates = new String[]{startDate,Utility.get1YearBackDate(date)};
-                Log.d(TAG, "onItemSelected: dates Year:"+dates[0]+" and :"+dates[1]);
-                fetchHistoricalData(symbol,startDate,Utility.get1YearBackDate(date));
+                dates = new String[]{startDate, Utility.get1YearBackDate(date)};
+                Log.d(TAG, "onItemSelected: dates Year:" + dates[0] + " and :" + dates[1]);
+                fetchHistoricalData(symbol, startDate, Utility.get1YearBackDate(date));
                 break;
-           default:
-               dates = new String[]{startDate,Utility.get1WeekBackDate(date)};
-               Log.d(TAG, "onItemSelected: dates Week :"+dates[0]+" and :"+dates[1]);
-               fetchHistoricalData(symbol,startDate,Utility.get1YearBackDate(date));
+            default:
+                dates = new String[]{startDate, Utility.get1WeekBackDate(date)};
+                Log.d(TAG, "onItemSelected: dates Week :" + dates[0] + " and :" + dates[1]);
+                fetchHistoricalData(symbol, startDate, Utility.get1YearBackDate(date));
         }
 
     }
