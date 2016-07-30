@@ -1,0 +1,6 @@
+{
+  "name": "Stockhawkapp",
+  "tagline": "Production Ready App :  Widget implementation , Right to Left text support , Error case handling , localization",
+  "body": "\r\n##StockHawkUdacity is Project 3 for Android Nanodegree program\r\n\r\n<ul>\r\n\t<li> Added accessiblity , making screen reader compatible.</li>\r\n\t<li> Localisation and RTL support for languages like arabic. </li>\r\n\t<li> Visualisation , Graphs charts on stock prices over specific period of time.</li>\r\n\t<li> Widget for viewing data in home screen </li>\r\n\t<li> Error case handling , preventing from crashing </li>\r\n\t<li> Improved UX / UI by informing data freshness state to user in case of poor network </li>\r\n\t</ul>\r\n\r\n# Screenshots \r\n<img src=\"blob/stock-main.png\" height=\"480\" width=\"270\">\r\n<img src=\"blob/stock-widget.png\" height=\"480\" width=\"270\">\r\n<br>\r\n## Download APK\r\n\r\n<a href=\"/blob/stockhawk.apk\" rel=\"Download APK\"><img src=\"blob/down_apk.png\" height=\"80\"></a>\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
